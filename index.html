@@ -3,19 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Coming Soon</title>
-<meta name="description" content="Muy pronto.">
+<title>Accexuri — Coming Soon</title>
+<meta name="description" content="Algo nuevo está por llegar.">
 <link rel="icon" href="data:,">
 
-<!-- model-viewer: web component ligero (lazy-loads su propio runtime) para render 3D con WebGL, sin necesidad de escribir código Three.js a mano -->
-<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js" async></script>
+<!-- preload de las imágenes visibles al instante para que no haya parpadeo -->
+<link rel="preload" as="image" href="assets/img/textura-fondo.png">
+<link rel="preload" as="image" href="assets/img/logo-accexuri.png">
+<link rel="preload" as="image" href="assets/img/cortina.png">
+<link rel="preload" as="image" href="assets/img/coming-soon.png">
 
 <style>
   :root{
-    --bg: #ddde00;
-    --ink: #171717;
-    --muted: #4a4a00;
-    --accent: #171717;
+    --bg: #050505;
+    --accent: #ddde00;
+    --accent-dim: #8a8b00;
   }
 
   *{ margin:0; padding:0; box-sizing:border-box; }
@@ -28,8 +30,8 @@
   }
 
   body{
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    color:var(--ink);
+    font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Roboto Mono", monospace;
+    color:var(--accent);
   }
 
   .stage{
@@ -37,132 +39,183 @@
     height:100vh;
     height:100dvh;
     width:100vw;
-    display:flex;
-    align-items:center;
-    justify-content:center;
     overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding-top:clamp(16px, 4vh, 48px);
+    gap:clamp(20px, 3.5vh, 48px);
+    background:
+      radial-gradient(60% 45% at 50% 24%, rgba(221,222,0,0.10) 0%, rgba(0,0,0,0) 70%),
+      #050505;
   }
 
-  /* Fondo: gradiente sutil radial para dar profundidad sin pesar */
-  .bg-glow{
+  .bg-texture{
     position:absolute;
     inset:0;
-    background:
-      radial-gradient(60% 50% at 50% 42%, #ffffff 0%, var(--bg) 70%);
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center;
+    opacity:0.55;
+    mix-blend-mode:screen;
     z-index:0;
-  }
-
-  model-viewer{
-    position:relative;
-    z-index:1;
-    width:min(1100px, 92vw);
-    height:min(1100px, 92vh);
-    --poster-color: transparent;
-    background-color: transparent;
-    outline:none;
-  }
-
-  /* Placeholder mientras no exista el .glb: figura suave para que la página
-     nunca se vea "rota" antes de conectar el modelo real */
-  .fallback-shape{
-    position:absolute;
-    z-index:1;
-    width:min(420px, 55vw);
-    height:min(420px, 55vw);
-    border-radius:50%;
-    background: conic-gradient(from 220deg, #ececea, #ffffff, #e4e4e1, #ffffff, #ececea);
-    filter: blur(0.5px);
-    box-shadow:
-      0 40px 80px -20px rgba(0,0,0,0.12),
-      inset 0 0 60px rgba(255,255,255,0.6);
-    animation: float 6s ease-in-out infinite;
-    display:none;
-  }
-
-  @keyframes float{
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-18px); }
-  }
-
-  .mark{
-    position:absolute;
-    left:50%;
-    bottom:9vh;
-    transform:translateX(-50%);
-    z-index:2;
-    text-align:center;
     pointer-events:none;
   }
 
-  .mark .label{
-    font-size: clamp(13px, 1.6vw, 16px);
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: var(--ink);
-    font-weight:600;
+  /* Logo y cortina viven dentro del mismo contenedor y se posicionan en %
+     relativos a él, para que jamás se desalineen entre sí sin importar
+     el tamaño de la pantalla. La altura del bloque está definida por la
+     cortina (el elemento más alto), así el contenido de abajo nunca
+     queda tapado: fluye justo después, en vez de usar coordenadas fijas. */
+  .lockup{
+    position:relative;
+    flex:0 0 auto;
+    width:clamp(380px, 58vw, 1020px);
+    aspect-ratio: 1.793;
+    z-index:1;
   }
 
-  .mark .rule{
-    width:36px;
-    height:1px;
-    background: var(--muted);
-    margin: 14px auto 0;
-    opacity:0.7;
+  .logo-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    opacity:0.95;
+    pointer-events:none;
   }
 
-  @media (max-width: 640px){
-    .mark{ bottom:7vh; }
+  .curtain-img{
+    position:absolute;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:86%;
+    height:auto;
+    z-index:2;
+    display:block;
+    filter: drop-shadow(0 30px 40px rgba(0,0,0,0.55));
+    pointer-events:none;
   }
 
-  @media (prefers-reduced-motion: reduce){
-    .fallback-shape{ animation:none; }
+  .content{
+    position:relative;
+    flex:0 0 auto;
+    z-index:3;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:clamp(14px, 2.2vh, 24px);
+    padding: 0 24px;
+  }
+
+  .coming-soon{
+    width:clamp(170px, 18vw, 300px);
+    height:auto;
+    display:block;
+  }
+
+  .loading{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+
+  .bar{
+    display:flex;
+    gap:4px;
+  }
+
+  .bar span{
+    width:clamp(16px, 2.1vw, 26px);
+    height:clamp(16px, 2.1vw, 26px);
+    border:1px solid var(--accent);
+    background:transparent;
+    opacity:0.35;
+  }
+
+  .bar span.filled{
+    background:var(--accent);
+    opacity:1;
+  }
+
+  .bar span.filled:first-child{
+    background:#fdfef0;
+  }
+
+  @keyframes loadPulse{
+    0%   { opacity:0.35; background:transparent; }
+    100% { opacity:0.35; background:transparent; }
+  }
+
+  .loading-label{
+    font-size: clamp(11px, 1.3vw, 13px);
+    letter-spacing:0.15em;
+    color:var(--accent);
+    opacity:0.85;
+  }
+
+  .subtitle{
+    font-size: clamp(12px, 1.5vw, 15px);
+    letter-spacing:0.12em;
+    color:var(--accent);
+    opacity:0.85;
+  }
+
+  @media (max-height: 680px){
+    .stage{ gap:clamp(10px, 2vh, 24px); padding-top:clamp(10px, 2vh, 24px); }
+    .lockup{ width:clamp(260px, 46vw, 480px); }
+    .content{ gap:8px; }
+    .coming-soon{ width:clamp(130px, 15vw, 220px); }
   }
 </style>
 </head>
 <body>
 
 <section class="stage">
-  <div class="bg-glow"></div>
+  <img class="bg-texture" src="assets/img/textura-fondo.png" alt="">
 
-  <div class="fallback-shape" id="fallbackShape"></div>
+  <div class="lockup">
+    <img class="logo-img" src="assets/img/logo-accexuri.png" alt="Accexuri">
+    <img class="curtain-img" src="assets/img/cortina.png" alt="">
+  </div>
 
-  <model-viewer
-    id="model"
-    src="assets/models/model.glb"
-    alt="Modelo 3D"
-    camera-controls
-    disable-zoom
-    disable-pan
-    auto-rotate
-    auto-rotate-delay="0"
-    rotation-per-second="16deg"
-    interaction-prompt="none"
-    shadow-intensity="1"
-    shadow-softness="1"
-    exposure="1.15"
-    environment-image="neutral"
-    camera-orbit="0deg 75deg auto"
-    field-of-view="30deg"
-    loading="eager"
-    reveal="auto"
-  ></model-viewer>
+  <div class="content">
+    <img class="coming-soon" src="assets/img/coming-soon.png" alt="Coming Soon">
 
-  <div class="mark">
-    <div class="label">Coming Soon</div>
-    <div class="rule"></div>
+    <div class="loading">
+      <div class="bar" id="bar" aria-hidden="true"></div>
+      <div class="loading-label">Loading...</div>
+    </div>
+
+    <div class="subtitle">Algo nuevo está por llegar</div>
   </div>
 </section>
 
 <script>
-  const viewer = document.getElementById('model');
-  const fallback = document.getElementById('fallbackShape');
+  // Barra de carga: se llena en bucle para dar sensación de "algo cargando"
+  const TOTAL = 8;
+  const bar = document.getElementById('bar');
+  const segments = [];
 
-  // Si el .glb aún no existe o falla al cargar, mostramos el placeholder
-  // en su lugar para que la landing nunca se vea vacía o rota.
-  viewer.addEventListener('error', () => {
-    viewer.style.display = 'none';
-    fallback.style.display = 'block';
-  });
+  for (let i = 0; i < TOTAL; i++) {
+    const span = document.createElement('span');
+    bar.appendChild(span);
+    segments.push(span);
+  }
+
+  let filled = 0;
+  function tick(){
+    segments.forEach((s, i) => s.classList.toggle('filled', i < filled));
+    filled = filled >= TOTAL ? 0 : filled + 1;
+  }
+  tick();
+  setInterval(tick, 450);
 </script>
 
 </body>
