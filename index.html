@@ -10,7 +10,7 @@
 <!-- preload de las imágenes visibles al instante para que no haya parpadeo -->
 <link rel="preload" as="image" href="assets/img/textura-fondo.png">
 <link rel="preload" as="image" href="assets/img/logo-accexuri.png">
-<link rel="preload" as="image" href="assets/img/cortina.png">
+<link rel="preload" as="image" href="assets/img/cortina-larga.png">
 <link rel="preload" as="image" href="assets/img/coming-soon.png">
 
 <style>
@@ -44,7 +44,6 @@
     flex-direction:column;
     align-items:center;
     justify-content:flex-start;
-    padding-top:clamp(16px, 4vh, 48px);
     gap:clamp(20px, 3.5vh, 48px);
     background:
       radial-gradient(60% 45% at 50% 24%, rgba(221,222,0,0.10) 0%, rgba(0,0,0,0) 70%),
@@ -72,8 +71,11 @@
   .lockup{
     position:relative;
     flex:0 0 auto;
-    width:clamp(380px, 58vw, 1020px);
-    aspect-ratio: 1.793;
+    width:clamp(320px, 48vw, 820px);
+    aspect-ratio: 1.323;
+    /* sangra por encima del viewport para dar la sensación de que la
+       cortina cae desde más arriba de lo visible, no desde un borde plano */
+    margin-top:clamp(-72px, -7.5vh, -24px);
     z-index:1;
   }
 
@@ -92,7 +94,7 @@
     top:0;
     left:50%;
     transform:translateX(-50%);
-    width:86%;
+    width:66%;
     height:auto;
     z-index:2;
     display:block;
@@ -167,9 +169,25 @@
     opacity:0.85;
   }
 
+  /* Móvil (retrato): la cortina es la protagonista — grande, casi a todo
+     lo ancho, tapando bien el logo de atrás. El resto del contenido se
+     agranda un poco también para aprovechar mejor el alto disponible. */
+  @media (max-width: 640px){
+    .lockup{
+      width:clamp(360px, 100vw, 620px);
+      aspect-ratio: 0.949;
+      margin-top:clamp(-90px, -13vw, -30px);
+    }
+    .curtain-img{ width:92%; }
+    .stage{ gap:clamp(28px, 5vh, 56px); }
+    .content{ gap:clamp(16px, 3vh, 28px); }
+    .coming-soon{ width:clamp(200px, 46vw, 320px); }
+    .bar span{ width:clamp(20px, 6vw, 30px); height:clamp(20px, 6vw, 30px); }
+  }
+
   @media (max-height: 680px){
-    .stage{ gap:clamp(10px, 2vh, 24px); padding-top:clamp(10px, 2vh, 24px); }
-    .lockup{ width:clamp(260px, 46vw, 480px); }
+    .stage{ gap:clamp(10px, 2vh, 24px); }
+    .lockup{ width:clamp(220px, 34vw, 380px); margin-top:clamp(-40px, -6vh, -14px); }
     .content{ gap:8px; }
     .coming-soon{ width:clamp(130px, 15vw, 220px); }
   }
@@ -182,7 +200,7 @@
 
   <div class="lockup">
     <img class="logo-img" src="assets/img/logo-accexuri.png" alt="Accexuri">
-    <img class="curtain-img" src="assets/img/cortina.png" alt="">
+    <img class="curtain-img" src="assets/img/cortina-larga.png" alt="">
   </div>
 
   <div class="content">
